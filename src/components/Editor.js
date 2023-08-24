@@ -6,9 +6,20 @@ import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/closebrackets';
 import ACTIONS from '../Actions';
+import copy from "../Images/copyclipboard1.png"
 
-const Editor = ({ socketRef, roomId, onCodeChange }) => {
+const Editor = ({ socketRef, roomId, onCodeChange, codeRef }) => {
     const editorRef = useRef(null);
+    const copyCode = () =>{
+        console.log({codeRef});
+        navigator.clipboard.writeText(codeRef)
+        .then(() => {
+            console.log('Content copied to clipboard');
+        })
+        .catch(err => {
+            console.error('Unable to copy content to clipboard', err);
+        });
+    }
     useEffect(() => {
         async function init() {
             editorRef.current = Codemirror.fromTextArea(
@@ -50,8 +61,16 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
             socketRef.current.off(ACTIONS.CODE_CHANGE);
         };
     }, [socketRef.current]);
+    
 
-    return <textarea id="realtimeEditor"></textarea>;
+    return (
+        <>
+            <textarea id="realtimeEditor">
+            
+            </textarea>
+           
+        </>
+    )
 };
 
 export default Editor;

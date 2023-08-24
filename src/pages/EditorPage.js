@@ -10,8 +10,9 @@ import {
     Navigate,
     useParams,
 } from 'react-router-dom';
-
+import copy from "../Images/copyclipboard1.png"
 const EditorPage = () => {
+    const [content, setContent] = useState("");
     const socketRef = useRef(null);
     const codeRef = useRef(null);
     const location = useLocation();
@@ -37,6 +38,7 @@ const EditorPage = () => {
             });
 
             // Listening for joined event
+
             socketRef.current.on(
                 ACTIONS.JOINED,
                 ({ clients, username, socketId }) => {
@@ -53,6 +55,7 @@ const EditorPage = () => {
             );
 
             // Listening for disconnected
+
             socketRef.current.on(
                 ACTIONS.DISCONNECTED,
                 ({ socketId, username }) => {
@@ -66,6 +69,7 @@ const EditorPage = () => {
             );
         };
         init();
+        
         return () => {
             socketRef.current.disconnect();
             socketRef.current.off(ACTIONS.JOINED);
@@ -90,7 +94,17 @@ const EditorPage = () => {
     if (!location.state) {
         return <Navigate to="/" />;
     }
-
+    const copyCode = () =>{
+        console.log(codeRef.current);
+        navigator.clipboard.writeText(codeRef.current)
+        .then(() => {
+            console.log('Content copied to clipboard');
+            toast.success('Copied');
+        })
+        .catch(err => {
+            console.error('Unable to copy content to clipboard', err);
+        });
+    }
     return (
         <div className="mainWrap">
             <div className="aside">
@@ -103,6 +117,10 @@ const EditorPage = () => {
                         />
                     </div>
                     <h3>Connected</h3>
+                    <div className="classs" >
+                        <img className="classs"  src= {copy} alt="" onClick={copyCode} />
+                    </div>
+                    
                     <div className="clientsList">
                         {clients.map((client) => (
                             <Client
@@ -115,6 +133,7 @@ const EditorPage = () => {
                 <button className="btn copyBtn" onClick={copyRoomId}>
                     Copy ROOM ID
                 </button>
+                
                 <button className="btn leaveBtn" onClick={leaveRoom}>
                     Leave
                 </button>
@@ -123,8 +142,11 @@ const EditorPage = () => {
                 <Editor
                     socketRef={socketRef}
                     roomId={roomId}
+                    codeRef={codeRef.current}
                     onCodeChange={(code) => {
                         codeRef.current = code;
+                        setContent(code);
+                        console.log(content);
                     }}
                 />
             </div>
